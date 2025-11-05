@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radio Tepeyac App</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --azul: #4da6ff;
+      --gris: #1e1e1e;
+      --blanco: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background-color: #000;
+      color: var(--blanco);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .home-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .banner {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .menu-button {
+      background: var(--gris);
+      border: 2px solid var(--azul);
+      padding: 1.2rem 2rem;
+      font-size: 1.3rem;
+      color: var(--blanco);
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+      max-width: 300px;
+      transition: background 0.3s ease, color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .menu-button:hover {
+      background: var(--azul);
+      color: #000;
+    }
+
+    .icon {
+      font-size: 2rem;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .social-icons a {
+      color: var(--blanco);
+      font-size: 1.8rem;
+      transition: color 0.3s;
+    }
+
+    .social-icons a:hover {
+      color: var(--azul);
+    }
+
+    #audio {
+      display: none;
+    }
+
+    .volume {
+      width: 150px;
+      margin-top: 1rem;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .countdown {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: var(--azul);
+    }
+  </style>
+</head>
+
+<body>
+  <main class="home-container">
+
+    <img src="https://res.cloudinary.com/dtrg7mbgi/image/upload/v1751351640/banner_qic36x.jpg"
+      alt="Banner Radio Tepeyac" class="banner">
+
+    <div class="countdown">Faltan <span id="timer-home"></span> PARA LOS 500 AÑOS de las apariciones de la Virgen de Guadalupe.</div>
+
+    <!-- ✅ Botón para escuchar radio visible desde el inicio -->
+    <button id="radioBtn" class="menu-button" onclick="togglePlay()">
+      <i class="fas fa-play icon"></i> Escuchar Radio
+    </button>
+
+    <!-- Volumen -->
+    <input type="range" class="volume" min="0" max="1" step="0.1" value="1" onchange="setVolume(this.value)"
+      aria-label="Volumen">
+
+    <!-- Audio -->
+    <audio id="audio" preload="none" src="https://c40.radioboss.fm:8085/stream"></audio>
+
+    <div class="social-icons">
+      <a href="https://facebook.com/profile.php?id=100007031445504" target="_blank" aria-label="Facebook">
+        <i class="fab fa-facebook"></i>
+      </a>
+      <a href="https://wa.me/529811016637" target="_blank" aria-label="WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+      <a href="https://miparroquiadijital.space/" target="_blank" aria-label="Sitio web">
+        <i class="fas fa-globe"></i>
+      </a>
+    </div>
+
+    <div class="footer">© 2025 Radio Tepeyac</div>
+
+  </main>
+
+
+  <script>
+    const audio = document.getElementById('audio');
+    const btn = document.getElementById('radioBtn');
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play().then(() => {
+          btn.innerHTML = '<i class="fas fa-pause icon"></i> Detener Radio';
+        }).catch(() => {
+          alert("Toca nuevamente para permitir el audio");
+        });
+      } else {
+        audio.pause();
+        btn.innerHTML = '<i class="fas fa-play icon"></i> Escuchar Radio';
+      }
+    }
+
+    function setVolume(val) {
+      audio.volume = val;
+    }
+
+    // 🔒 Para navegadores que bloquean autoplay
+    document.body.addEventListener('touchstart', () => {
+      audio.load();
+      audio.play().catch(() => { });
+      audio.pause();
+    }, { once: true });
+
+    // 🕒 Countdown
+    const timerHome = document.getElementById('timer-home');
+
+    function updateCountdown() {
+      const now = new Date();
+      const eventDate = new Date("December 12, 2031 00:00:00");
+      const diff = eventDate - now;
+
+      if (diff <= 0) {
+        timerHome.textContent = "¡Hoy es el día!";
+        return;
+      }
+
+      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+      const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      timerHome.textContent = `${years} años, ${days} días, ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker registrado'))
+        .catch(err => console.error('Error al registrar el Service Worker:', err));
+    }
+  </script>
+
+</body>
+
+</html>
